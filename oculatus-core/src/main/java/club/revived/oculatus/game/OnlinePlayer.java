@@ -1,6 +1,61 @@
 package club.revived.oculatus.game;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+import org.jetbrains.annotations.NotNull;
+
+import club.revived.oculatus.Cluster;
+import club.revived.oculatus.persistence.PersistentDataManager;
 
 public record OnlinePlayer(UUID uuid, String username, String server, String skin, String signature, int ping) {
+
+  public <T> void cacheValue(
+      final Class<T> clazz,
+      final T obj) {
+    Cluster.getInstance()
+        .getGlobalCache()
+        .set(this.uuid + ":" + clazz.getSimpleName().toLowerCase(), obj);
+  }
+
+  public <T> void cacheExValue(
+      final Class<T> clazz,
+      final T obj,
+      final long seconds) {
+    Cluster.getInstance()
+        .getGlobalCache()
+        .setEx(
+            this.uuid + ":" + clazz.getSimpleName().toLowerCase(),
+            obj,
+            seconds);
+  }
+
+  @NotNull
+  public <T> CompletableFuture<Optional<T>> getCachedValue(final Class<T> clazz) {
+    return Cluster.getInstance()
+        .getGlobalCache()
+        .get(clazz, this.uuid + ":" + clazz.getSimpleName().toLowerCase())
+        .thenApply(value -> {
+          return Optional.ofNullable(value);
+        });
+  }
+
+  @NotNull
+  public <T> CompletableFuture<Optional<T>> getCachedOrLoad(final Class<T> clazz) {
+    return this.getCachedValue(clazz).thenCompose(t -> {
+      if (!t.isEmpty()) {
+        return CompletableFuture.completedFuture(t);
+      }
+
+      return PersistentDataManager.getInstance().get(clazz, this.uuid.toString())
+          .thenApply(opt -> {
+            final T val = opt.orElse(null);
+            if (val != null) {
+              this.cacheValue(clazz, val);
+            }
+            return Optional.ofNullable(val);
+          });
+    });
+  }
 }
