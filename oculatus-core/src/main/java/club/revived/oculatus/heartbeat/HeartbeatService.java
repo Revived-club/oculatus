@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import club.revived.oculatus.Cluster;
 import club.revived.oculatus.game.GameService;
 import club.revived.oculatus.kvbus.pubsub.MessageHandler;
+import club.revived.oculatus.service.ServiceFactory;
+import club.revived.oculatus.service.ServiceType;
 
 public abstract class HeartbeatService implements MessageHandler<Heartbeat> {
 
@@ -45,13 +47,14 @@ public abstract class HeartbeatService implements MessageHandler<Heartbeat> {
 
   @Override
   public void handle(final Heartbeat message) {
-    final var service = new GameService(message.id(), message.serverIp(), message.serviceType(),
-        message.onlinePlayers());
+    final var service = ServiceFactory.createService(
+        message.id(),
+        message.serverIp(),
+        message.serviceType());
 
     final var now = System.currentTimeMillis();
 
     this.lastSeen.put(message.id(), now);
     Cluster.getInstance().getServices().put(message.id(), service);
-
   }
 }

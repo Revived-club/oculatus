@@ -7,6 +7,7 @@ import club.revived.oculatus.game.ProxyService;
 import club.revived.oculatus.kvbus.providers.broker.MessageBroker;
 import club.revived.oculatus.kvbus.providers.cache.DistributedCacheStore;
 import club.revived.oculatus.kvbus.pubsub.ServiceMessageBus;
+import club.revived.oculatus.service.Service;
 import club.revived.oculatus.service.ServiceStatus;
 import club.revived.oculatus.service.ServiceType;
 
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 public final class Cluster {
 
@@ -37,7 +37,7 @@ public final class Cluster {
   private final ServiceMessageBus messagingService;
 
   @NotNull
-  private final Map<String, GameService> services = new ConcurrentHashMap<>();
+  private final Map<String, Service> services = new ConcurrentHashMap<>();
 
   @NotNull
   private final String ip;
@@ -66,10 +66,12 @@ public final class Cluster {
   }
 
   @NotNull
-  public GameService getLeastLoadedService(final ServiceType serviceType) {
+  public GameService getLeastLoadedGameServer(final ServiceType serviceType) {
     final var services = this.services.values()
         .stream()
         .filter(clusterService -> clusterService.getType() == serviceType)
+        .filter(clusterService -> clusterService instanceof GameService)
+        .map(clusterService -> (GameService) clusterService)
         .sorted(Comparator.comparingInt(service -> service.getOnlinePlayers().size()))
         .toList();
 
@@ -104,7 +106,7 @@ public final class Cluster {
     return messagingService;
   }
 
-  public @NotNull Map<String, GameService> getServices() {
+  public @NotNull Map<String, Service> getServices() {
     return services;
   }
 

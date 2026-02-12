@@ -7,7 +7,7 @@ import club.revived.oculatus.service.ServiceType;
 
 public abstract class MicroService extends Service {
 
-  public MicroService(final @NotNull String id, final @NotNull String ip) {
-    super(id, ip, ServiceType.MICROSERVICE);
+  public MicroService(final @NotNull String id) {
+    super(id, "localhost", ServiceType.MICROSERVICE);
   }
 }
