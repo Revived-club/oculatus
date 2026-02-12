@@ -1,5 +1,9 @@
 package club.revived.oculatus;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.jetbrains.annotations.NotNull;
 
 import club.revived.oculatus.game.GameService;
@@ -10,13 +14,7 @@ import club.revived.oculatus.kvbus.pubsub.ServiceMessageBus;
 import club.revived.oculatus.service.Service;
 import club.revived.oculatus.service.ServiceStatus;
 import club.revived.oculatus.service.ServiceType;
-
-import java.net.InetAddress;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import club.revived.oculatus.status.StatusService;
 
 public final class Cluster {
 
@@ -42,27 +40,62 @@ public final class Cluster {
   @NotNull
   private final String ip;
 
-  public static ServiceStatus STATUS = ServiceStatus.STARTING;
+  private final boolean statusService;
+
+  private ServiceStatus status = ServiceStatus.STARTING;
 
   public Cluster(
       final @NotNull MessageBroker broker,
       final @NotNull DistributedCacheStore cache,
       final @NotNull ServiceType serviceType,
+      final @NotNull String serviceIp,
       final @NotNull String id) {
+    this(broker, cache, serviceType, serviceIp, id, true);
+  }
+
+  public Cluster(
+      final @NotNull MessageBroker broker,
+      final @NotNull DistributedCacheStore cache,
+      final @NotNull ServiceType serviceType,
+      final @NotNull String serviceIp,
+      final @NotNull String id,
+      final boolean statusService) {
     this.broker = broker;
     this.serviceType = serviceType;
     this.serviceId = id;
-    this.ip = this.serviceIp();
+    this.ip = serviceIp;
     this.messagingService = new ServiceMessageBus(broker, id);
     this.globalCache = cache;
+    this.statusService = statusService;
 
     instance = this;
+  }
+
+  public void init() {
+    if (this.statusService) {
+      new StatusService(this.messagingService);
+    }
+
+    // TODO: implement rest of initialization logic
   }
 
   public <T> void send(
       final String id,
       final T message) {
     this.broker.publish(id, message);
+  }
+
+  @NotNull
+  public GameService getLeastLoadedProxy(final ServiceType serviceType) {
+    final var services = this.services.values()
+        .stream()
+        .filter(clusterService -> clusterService.getType() == serviceType)
+        .filter(clusterService -> clusterService instanceof ProxyService)
+        .map(clusterService -> (GameService) clusterService)
+        .sorted(Comparator.comparingInt(service -> service.getOnlinePlayers().size()))
+        .toList();
+
+    return services.getFirst();
   }
 
   @NotNull
@@ -76,18 +109,6 @@ public final class Cluster {
         .toList();
 
     return services.getFirst();
-  }
-
-  @NotNull
-  private String serviceIp() {
-    try {
-      final var ip = InetAddress.getLocalHost().getHostAddress();
-      final var port = 19132;
-
-      return ip + ":" + port;
-    } catch (final Exception e) {
-      throw new IllegalStateException("Service failed to get IP");
-    }
   }
 
   public @NotNull String getIp() {
@@ -124,5 +145,13 @@ public final class Cluster {
     }
 
     return instance;
+  }
+
+  public ServiceStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(final @NotNull ServiceStatus status) {
+    this.status = status;
   }
 }
