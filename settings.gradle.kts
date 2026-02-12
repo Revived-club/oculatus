@@ -13,3 +13,4 @@ plugins {
 rootProject.name = "oculatus"
 include("oculatus-core")
 include("oculatus-bukkit")
+include("oculatus-velocity")
