@@ -4,7 +4,8 @@ junit = "4.13.2"
 jedis = "5.1.0"
 shadow = "9.3.1"
 jetbrainsannotations = "26.0.2-1"
-minecraft = "1.21.10"
+minecraft = '1.21.11-R0.1-SNAPSHOT'
+
 
 
 [libraries]
@@ -12,7 +13,7 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 junit = { module = "junit:junit", version.ref = "junit" }
 jetbrainsannotations = { module = "org.jetbrains:annotations", version.ref = "jetbrainsannotations" }
-paper =  { module = "io.papermc.paper:paper-api", version.ref = "minecraft"}
+papermc =  { module = "io.papermc.paper:paper-api", version.ref = "minecraft"}
 
 [plugins]
 shadow = { id =  "com.gradleup.shadow", version.ref = "shadow" }
