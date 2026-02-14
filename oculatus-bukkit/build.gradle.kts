@@ -14,7 +14,7 @@ dependencies {
     implementation(libs.guava)
     compileOnly(libs.papermc)
     implementation(project(":oculatus-core"))
-    implementation(libs.commonsBukkit)
+    compileOnly(libs.commonsBukkit)
 }
 
 java {

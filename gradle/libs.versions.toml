@@ -6,7 +6,7 @@ shadow = "9.3.1"
 jetbrainsannotations = "26.0.2-1"
 minecraft = '1.21.11-R0.1-SNAPSHOT'
 velocity = "3.4.0-SNAPSHOT"
-commons = "0.1.9"
+commons = "0.1.10"
 
 
 [libraries]
@@ -17,6 +17,7 @@ jetbrainsannotations = { module = "org.jetbrains:annotations", version.ref = "je
 papermc =  { module = "io.papermc.paper:paper-api", version.ref = "minecraft"}
 velocity = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
 commonsBukkit = { module = "club.revived.commons:commons-bukkit", version.ref = "commons" }
+commons = { module = "club.revived.commons:commons-core", version.ref = "commons" }
 
 [plugins]
 shadow = { id =  "com.gradleup.shadow", version.ref = "shadow" }

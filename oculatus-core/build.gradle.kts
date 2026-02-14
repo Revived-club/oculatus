@@ -5,6 +5,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://mvn.revived.club/releases")
 }
 
 dependencies {
@@ -12,6 +13,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.jedis)
     compileOnly(libs.jetbrainsannotations)
+    compileOnly(libs.commons)
 }
 
 java {

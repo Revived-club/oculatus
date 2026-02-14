@@ -6,8 +6,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.jetbrains.annotations.NotNull;
 
+import club.revived.commons.data.DataRepository;
+import club.revived.commons.orm.annotations.Entity;
 import club.revived.oculatus.Cluster;
-import club.revived.oculatus.persistence.PersistentDataManager;
 
 public record OnlinePlayer(UUID uuid, String username, String server, String skin, String signature, int ping) {
 
@@ -42,19 +43,17 @@ public record OnlinePlayer(UUID uuid, String username, String server, String ski
   }
 
   @NotNull
-  public <T> CompletableFuture<Optional<T>> getCachedOrLoad(final Class<T> clazz) {
+  public <T extends Entity> CompletableFuture<Optional<T>> getCachedOrLoad(final Class<T> clazz) {
     return this.getCachedValue(clazz).thenCompose(t -> {
-      if (!t.isEmpty()) {
+      if (t.isPresent()) {
         return CompletableFuture.completedFuture(t);
       }
 
-      return PersistentDataManager.getInstance().get(clazz, this.uuid.toString())
+      return DataRepository.getInstance()
+          .get(clazz, this.uuid.toString())
           .thenApply(opt -> {
-            final T val = opt.orElse(null);
-            if (val != null) {
-              this.cacheValue(clazz, val);
-            }
-            return Optional.ofNullable(val);
+            opt.ifPresent(val -> this.cacheValue(clazz, val));
+            return opt;
           });
     });
   }
