@@ -6,6 +6,7 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
+    maven("https://mvn.revived.club/releases")
 }
 
 dependencies {
@@ -13,6 +14,7 @@ dependencies {
     implementation(libs.guava)
     compileOnly(libs.papermc)
     implementation(project(":oculatus-core"))
+    implementation(libs.commonsBukkit)
 }
 
 java {

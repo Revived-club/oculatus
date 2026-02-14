@@ -3,8 +3,8 @@ package club.revived.oculatus.bukkit.heartbeat;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import club.revived.commons.bukkit.player.SkinUtils;
 import club.revived.oculatus.Cluster;
-import club.revived.oculatus.bukkit.util.SkinUtils;
 import club.revived.oculatus.game.OnlinePlayer;
 import club.revived.oculatus.heartbeat.Heartbeat;
 import club.revived.oculatus.heartbeat.HeartbeatService;
