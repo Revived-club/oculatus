@@ -1,6 +1,5 @@
 plugins {
-    application
-    alias(libs.plugins.shadow)
+    `java-library`
 }
 
 repositories {
@@ -12,8 +11,8 @@ dependencies {
     testImplementation(libs.junit)
     implementation(libs.guava)
     implementation(libs.jedis)
-    compileOnly(libs.jetbrainsannotations)
-    compileOnly(libs.commons)
+    api(libs.jetbrainsannotations)
+    api(libs.commons)
 }
 
 java {

@@ -1,6 +1,5 @@
 plugins {
-    application
-    alias(libs.plugins.shadow)
+    `java-library`
 }
 
 repositories {
@@ -14,7 +13,8 @@ dependencies {
     implementation(libs.guava)
     compileOnly(libs.papermc)
     implementation(project(":oculatus-core"))
-    compileOnly(libs.commonsBukkit)
+    implementation(libs.commonsBukkit)
+    implementation(libs.jetbrainsannotations)
 }
 
 java {

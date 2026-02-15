@@ -1,6 +1,5 @@
 package club.revived.oculatus.caching;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.CompletableFuture;
 
 import club.revived.commons.orm.ReflectionUtils;

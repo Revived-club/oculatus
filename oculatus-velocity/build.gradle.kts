@@ -1,11 +1,11 @@
 plugins {
-    application
-    alias(libs.plugins.shadow)
+    `java-library`
 }
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
+    maven("https://mvn.revived.club/releases")
 }
 
 dependencies {
